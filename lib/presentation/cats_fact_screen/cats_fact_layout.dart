@@ -1,7 +1,8 @@
-import 'package:cat_fact_application/data/services/network_services_impl.dart';
+import 'package:cat_fact_application/business_logic/cats_fact_bloc/content_bloc.dart';
 import 'package:cat_fact_application/presentation/cats_fact_archive_screen/cats_fact_archive_screen.dart';
 import 'package:cat_fact_application/presentation/widgets/cats_photo_and_fact_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CatsFactLayout extends StatefulWidget {
   const CatsFactLayout({super.key});
@@ -16,6 +17,12 @@ class _CatsFactLayoutState extends State<CatsFactLayout> {
   String fact = 'initial';
 
   @override
+  void initState() {
+    context.read<ContentBloc>().add(LoadingContentEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -25,45 +32,55 @@ class _CatsFactLayoutState extends State<CatsFactLayout> {
         ),
       ),
       body: Center(
-        child: Column(
-          children: [
-            spaces,
-            CatsPhotoFactWidget(catFact: fact),
-            spaces,
-            spaces,
-            SizedBox(
-              height: 50,
-              width: 200,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final service = NetworkServicesImpl();
-                  final newFact = await service.fetchFacts();
-                  setState(() {
-                    fact = newFact;
-                  });
-                },
-                child: const Text('New Facts'),
-              ),
-            ),
-            spaces,
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                height: 50,
-                width: 200,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CatsFactArchiveScreen()),
-                    );
-                  },
-                  child: const Text('Archive'),
-                ),
-              ),
-            ),
-          ],
+        child: BlocBuilder<ContentBloc, ContentState>(
+          builder: (context, state) {
+            if (state is CatsFactInitial) {
+              return const Text('data');
+            } else if (state is LoadingState) {
+              return const CircularProgressIndicator();
+            } else if (state is LoadedState) {
+              return Column(
+                children: [
+                  spaces,
+                  CatsPhotoFactWidget(
+                      catFact: state.model.fact!, catImage: state.model.image!),
+                  spaces,
+                  SizedBox(
+                    height: 50,
+                    width: 200,
+                    child: FloatingActionButton(
+                      onPressed: () => context.read<ContentBloc>().add(
+                            LoadingContentEvent(),
+                          ),
+                      child: const Text('New Facts'),
+                    ),
+                  ),
+                  spaces,
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      height: 50,
+                      width: 200,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const CatsFactArchiveScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Archive'),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              throw Exception();
+            }
+          },
         ),
       ),
     );

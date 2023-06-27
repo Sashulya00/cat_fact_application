@@ -1,11 +1,16 @@
-import 'package:cat_fact_application/presentation/widgets/cats_fact_widget.dart';
-import 'package:cat_fact_application/presentation/widgets/cats_photo_widget.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 class CatsPhotoFactWidget extends StatelessWidget {
-  const CatsPhotoFactWidget({super.key, required this.catFact});
+  const CatsPhotoFactWidget({
+    super.key,
+    required this.catFact,
+    required this.catImage,
+  });
 
   final String catFact;
+  final Uint8List catImage;
 
   static const spaces = SizedBox(height: 34.0);
 
@@ -13,10 +18,25 @@ class CatsPhotoFactWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CatsPhotoWidget(),
+        Container(
+          width: 200,
+          height: 200,
+          color: Colors.teal,
+          child: Center(
+            child: Image.memory(catImage),
+          ),
+        ),
         spaces,
-        CatsFactWidget(
-          titleFact: catFact,
+        Container(
+          width: 300,
+          height: 150,
+          color: Colors.cyanAccent,
+          child: Center(
+            child: Text(
+              catFact,
+              style: const TextStyle(color: Colors.black),
+            ),
+          ),
         ),
       ],
     );

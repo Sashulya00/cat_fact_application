@@ -1,4 +1,3 @@
-import 'package:cat_fact_application/presentation/widgets/cats_photo_and_fact_widget.dart';
 import 'package:flutter/material.dart';
 
 class CatsFactArchiveLayout extends StatelessWidget {
@@ -24,9 +23,9 @@ class CatsFactArchiveLayout extends StatelessWidget {
         child: Column(
           children: [
             spaces,
-            CatsPhotoFactWidget(
-              catFact: '',
-            ),
+            // CatsPhotoFactWidget(
+            //   catFact: '', catImage: ,
+            // ),
             spaces,
           ],
         ),
